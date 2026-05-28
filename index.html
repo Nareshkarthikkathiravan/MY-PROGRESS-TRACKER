@@ -139,6 +139,31 @@
       align-self: center;
     }
 
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 18px 0;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(13, 17, 23, 0.76);
+    }
+
+    .auth-tab {
+      border: 0;
+      border-radius: 7px;
+      min-height: 38px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .auth-tab.active {
+      color: var(--text);
+      background: var(--panel-2);
+    }
+
     .field {
       display: grid;
       gap: 8px;
@@ -175,6 +200,24 @@
       margin-top: 16px;
     }
 
+    .form-note,
+    .auth-message {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .auth-message.error,
+    .quiz-feedback.error {
+      color: #ffaaaa;
+    }
+
+    .auth-message.success,
+    .quiz-feedback.success {
+      color: #a8f0bc;
+    }
+
     .profile-chip {
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -201,6 +244,74 @@
       border-radius: 8px;
       color: var(--soft);
       background: rgba(13, 17, 23, 0.58);
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .insight {
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(76, 201, 216, 0.12), rgba(255, 255, 255, 0.03));
+    }
+
+    .insight strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.15rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .quiz-card {
+      width: min(760px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #161b22;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .quiz-card h2 {
+      margin-bottom: 6px;
+    }
+
+    .quiz-list {
+      display: grid;
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .quiz-question {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(13, 17, 23, 0.72);
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .topbar {
@@ -255,6 +366,12 @@
       transform: translateY(-1px);
       border-color: #465064;
       background: #272d38;
+    }
+
+    .button:disabled {
+      opacity: 0.62;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .button.primary {
@@ -620,6 +737,10 @@
         grid-template-columns: 1fr;
       }
 
+      .insight-grid {
+        grid-template-columns: 1fr;
+      }
+
       .account-actions {
         justify-content: stretch;
       }
@@ -641,7 +762,7 @@
         <div>
           <p class="eyebrow">Placement preparation command center</p>
           <h1>Track every mission with your own progress profile.</h1>
-          <p class="subtitle">Multiple learners can use the same tracker on this browser. Each username gets separate tasks, XP, badges, and learning notes.</p>
+          <p class="subtitle">Multiple learners can use the same tracker on this browser. Each email account gets separate tasks, XP, badges, and learning notes.</p>
         </div>
         <div class="hero-strip">
           <div class="hero-metric"><strong>62</strong><span>days of structured preparation</span></div>
@@ -651,15 +772,28 @@
       </div>
 
       <form class="login-card" id="loginForm">
-        <p class="eyebrow">Login</p>
-        <h2>Choose Your Profile</h2>
-        <p class="subtitle">Enter a name to start or continue your saved roadmap progress.</p>
-        <div class="field">
-          <label for="username">Username</label>
-          <input class="input" id="username" name="username" placeholder="Example: Naresh" autocomplete="username" required maxlength="32">
+        <p class="eyebrow">Secure profile</p>
+        <h2 id="authTitle">Sign In</h2>
+        <p class="subtitle" id="authSubtitle">Use your email and password to continue your saved roadmap progress.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button class="auth-tab active" id="signinTab" type="button">Sign In</button>
+          <button class="auth-tab" id="signupTab" type="button">Sign Up</button>
         </div>
-        <button class="button primary" type="submit">Enter Tracker</button>
-        <div class="profile-list" id="profileList" aria-label="Saved profiles"></div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required maxlength="80">
+        </div>
+        <div class="field hidden" id="nameField">
+          <label for="displayName">Name</label>
+          <input class="input" id="displayName" name="displayName" placeholder="Example: Naresh" autocomplete="name" maxlength="32">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" placeholder="Minimum 4 characters" autocomplete="current-password" required minlength="4" maxlength="40">
+        </div>
+        <button class="button primary" id="authSubmit" type="submit">Sign In</button>
+        <p class="auth-message" id="authMessage"></p>
+        <p class="form-note">This static GitHub Pages version saves accounts only in this browser.</p>
       </form>
     </div>
   </section>
@@ -723,6 +857,12 @@
             <div class="bar"><span id="todayBar"></span></div>
           </div>
 
+          <div class="insight-grid" aria-label="Learning insights">
+            <div class="insight"><strong id="nextMission">Next mission</strong><span class="muted">Select any day to preview the challenge.</span></div>
+            <div class="insight"><strong id="quizStatus">AI quiz gate</strong><span class="muted">Complete a short check before earning XP.</span></div>
+            <div class="insight"><strong id="focusHint">Focus hint</strong><span class="muted">Your current topic appears here.</span></div>
+          </div>
+
           <div class="tasks" id="taskList"></div>
 
           <div class="lower-grid section">
@@ -744,6 +884,20 @@
       </section>
     </section>
   </main>
+
+  <section class="modal hidden" id="quizModal" aria-modal="true" role="dialog" aria-labelledby="quizTitle">
+    <form class="quiz-card" id="quizForm">
+      <p class="eyebrow">AI completion check</p>
+      <h2 id="quizTitle">Prove Today&apos;s Learning</h2>
+      <p class="subtitle" id="quizSubtitle">Answer at least 2 questions correctly to mark this day complete.</p>
+      <div class="quiz-list" id="quizList"></div>
+      <p class="quiz-feedback" id="quizFeedback"></p>
+      <div class="quiz-actions">
+        <button class="button" id="cancelQuizButton" type="button">Cancel</button>
+        <button class="button primary" type="submit">Submit Answers</button>
+      </div>
+    </form>
+  </section>
 
   <script>
     const roadmap = [
@@ -842,6 +996,7 @@
     const keys = {
       activeUser: "python-dsa-roadmap-active-user",
       users: "python-dsa-roadmap-users",
+      accounts: "python-dsa-roadmap-accounts",
       legacyMigrated: "python-dsa-roadmap-legacy-migrated",
       legacyCompleted: "python-dsa-roadmap-completed",
       legacyNotes: "python-dsa-roadmap-notes"
@@ -849,6 +1004,8 @@
 
     let selectedIndex = getTodayIndex();
     let activeUser = localStorage.getItem(keys.activeUser) || "";
+    let authMode = "signin";
+    let currentQuiz = [];
     let completed = {};
     let notes = "";
 
@@ -860,12 +1017,26 @@
       loginView: document.getElementById("loginView"),
       appView: document.getElementById("appView"),
       loginForm: document.getElementById("loginForm"),
-      username: document.getElementById("username"),
-      profileList: document.getElementById("profileList"),
+      authTitle: document.getElementById("authTitle"),
+      authSubtitle: document.getElementById("authSubtitle"),
+      signinTab: document.getElementById("signinTab"),
+      signupTab: document.getElementById("signupTab"),
+      email: document.getElementById("email"),
+      displayName: document.getElementById("displayName"),
+      password: document.getElementById("password"),
+      nameField: document.getElementById("nameField"),
+      authSubmit: document.getElementById("authSubmit"),
+      authMessage: document.getElementById("authMessage"),
       activeUserLabel: document.getElementById("activeUserLabel"),
       logoutButton: document.getElementById("logoutButton"),
       resetButton: document.getElementById("resetButton"),
       markAllButton: document.getElementById("markAllButton"),
+      quizModal: document.getElementById("quizModal"),
+      quizForm: document.getElementById("quizForm"),
+      quizList: document.getElementById("quizList"),
+      quizSubtitle: document.getElementById("quizSubtitle"),
+      quizFeedback: document.getElementById("quizFeedback"),
+      cancelQuizButton: document.getElementById("cancelQuizButton"),
       overallProgress: document.getElementById("overallProgress"),
       level: document.getElementById("level"),
       doneDays: document.getElementById("doneDays"),
@@ -879,7 +1050,10 @@
       focusIcon: document.getElementById("focusIcon"),
       dayMeta: document.getElementById("dayMeta"),
       dayTitle: document.getElementById("dayTitle"),
-      dayPhase: document.getElementById("dayPhase")
+      dayPhase: document.getElementById("dayPhase"),
+      nextMission: document.getElementById("nextMission"),
+      quizStatus: document.getElementById("quizStatus"),
+      focusHint: document.getElementById("focusHint")
     };
 
     els.notes.addEventListener("input", (event) => {
@@ -889,9 +1063,19 @@
 
     els.loginForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const username = cleanUsername(els.username.value);
-      if (!username) return;
-      login(username);
+      handleAuth();
+    });
+
+    els.signinTab.addEventListener("click", () => setAuthMode("signin"));
+    els.signupTab.addEventListener("click", () => setAuthMode("signup"));
+
+    els.quizForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      gradeQuiz();
+    });
+
+    els.cancelQuizButton.addEventListener("click", () => {
+      els.quizModal.classList.add("hidden");
     });
 
     els.logoutButton.addEventListener("click", () => {
@@ -899,8 +1083,8 @@
       localStorage.removeItem(keys.activeUser);
       els.appView.classList.add("hidden");
       els.loginView.classList.remove("hidden");
-      renderProfiles();
-      els.username.focus();
+      els.password.value = "";
+      els.email.focus();
     });
 
     els.resetButton.addEventListener("click", () => {
@@ -914,13 +1098,7 @@
     });
 
     els.markAllButton.addEventListener("click", () => {
-      const day = roadmap[selectedIndex];
-      completed[day.date] = {
-        tasks: Array(day.tasks.length).fill(true),
-        dayDone: true
-      };
-      saveCompleted();
-      render();
+      openQuiz();
     });
 
     function getTodayIndex() {
@@ -938,6 +1116,10 @@
       }
     }
 
+    function storageUserId(email) {
+      return email.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    }
+
     function userKey(part) {
       return `python-dsa-roadmap-user-${activeUser}-${part}`;
     }
@@ -950,6 +1132,14 @@
       return readJson(keys.users, []);
     }
 
+    function getAccounts() {
+      return readJson(keys.accounts, {});
+    }
+
+    function saveAccounts(accounts) {
+      localStorage.setItem(keys.accounts, JSON.stringify(accounts));
+    }
+
     function saveUser(username) {
       const users = getUsers();
       if (!users.includes(username)) {
@@ -958,15 +1148,70 @@
       }
     }
 
-    function login(username) {
-      activeUser = username;
-      saveUser(username);
-      localStorage.setItem(keys.activeUser, username);
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isSignup = mode === "signup";
+      els.signinTab.classList.toggle("active", !isSignup);
+      els.signupTab.classList.toggle("active", isSignup);
+      els.nameField.classList.toggle("hidden", !isSignup);
+      els.authTitle.textContent = isSignup ? "Create Account" : "Sign In";
+      els.authSubtitle.textContent = isSignup
+        ? "Create a local account with email and password."
+        : "Use your email and password to continue your saved roadmap progress.";
+      els.authSubmit.textContent = isSignup ? "Create Account" : "Sign In";
+      els.authMessage.textContent = "";
+      els.authMessage.className = "auth-message";
+    }
+
+    function handleAuth() {
+      const email = els.email.value.trim().toLowerCase();
+      const password = els.password.value;
+      const displayName = cleanUsername(els.displayName.value) || email.split("@")[0];
+      if (!email || !password || password.length < 4) {
+        showAuthMessage("Enter a valid email and a password with at least 4 characters.", "error");
+        return;
+      }
+
+      const accounts = getAccounts();
+      const id = storageUserId(email);
+      if (authMode === "signup") {
+        if (accounts[id]) {
+          showAuthMessage("An account already exists. Sign in instead.", "error");
+          return;
+        }
+        accounts[id] = { email, password, displayName, createdAt: new Date().toISOString() };
+        saveAccounts(accounts);
+        saveUser(displayName);
+        showAuthMessage("Account created. Opening your tracker.", "success");
+        login(id);
+        return;
+      }
+
+      if (!accounts[id] || accounts[id].password !== password) {
+        showAuthMessage("Email or password is incorrect.", "error");
+        return;
+      }
+      login(id);
+    }
+
+    function showAuthMessage(message, type) {
+      els.authMessage.textContent = message;
+      els.authMessage.className = `auth-message ${type}`;
+    }
+
+    function getActiveAccount() {
+      return getAccounts()[activeUser] || { displayName: activeUser || "Guest", email: "" };
+    }
+
+    function login(userId) {
+      activeUser = userId;
+      localStorage.setItem(keys.activeUser, userId);
       migrateLegacyData();
       completed = readJson(userKey("completed"), {});
       notes = localStorage.getItem(userKey("notes")) || "";
+      const account = getActiveAccount();
       els.notes.value = notes;
-      els.activeUserLabel.textContent = username;
+      els.activeUserLabel.textContent = account.displayName || account.email || "Learner";
       els.loginView.classList.add("hidden");
       els.appView.classList.remove("hidden");
       render();
@@ -980,23 +1225,6 @@
       if (legacyCompleted) localStorage.setItem(userKey("completed"), legacyCompleted);
       if (legacyNotes) localStorage.setItem(userKey("notes"), legacyNotes);
       if (legacyCompleted || legacyNotes) localStorage.setItem(keys.legacyMigrated, activeUser);
-    }
-
-    function renderProfiles() {
-      const users = getUsers();
-      els.profileList.innerHTML = "";
-      if (!users.length) {
-        els.profileList.innerHTML = '<span class="muted">No saved profiles yet.</span>';
-        return;
-      }
-      users.forEach((username) => {
-        const button = document.createElement("button");
-        button.className = "profile-chip";
-        button.type = "button";
-        button.textContent = username;
-        button.addEventListener("click", () => login(username));
-        els.profileList.appendChild(button);
-      });
     }
 
     function saveCompleted() {
@@ -1029,6 +1257,7 @@
       renderRoadmap();
       renderDay();
       renderBadges(doneDays, totalXp);
+      renderInsights(doneDays, totalXp, streak);
     }
 
     function getStreak() {
@@ -1074,6 +1303,8 @@
       els.dayPhase.textContent = `${day.phase} | ${day.xp} XP`;
       els.todayCount.textContent = `${completedCount}/${day.tasks.length}`;
       els.todayBar.style.width = `${(completedCount / day.tasks.length) * 100}%`;
+      els.markAllButton.textContent = completed[day.date]?.dayDone ? "Completed" : "Take AI Quiz";
+      els.markAllButton.disabled = !!completed[day.date]?.dayDone;
 
       els.taskList.innerHTML = "";
       day.tasks.forEach((task, index) => {
@@ -1108,6 +1339,100 @@
       });
     }
 
+    function renderInsights(doneDays, totalXp, streak) {
+      const nextDay = roadmap.find((day) => !completed[day.date]?.dayDone) || roadmap[roadmap.length - 1];
+      els.nextMission.textContent = nextDay.title;
+      els.quizStatus.textContent = `${doneDays} days cleared`;
+      els.focusHint.textContent = `${roadmap[selectedIndex].focus} | ${totalXp} XP`;
+      els.nextMission.nextElementSibling.textContent = `Next unlocked target: ${nextDay.phase}`;
+      els.quizStatus.nextElementSibling.textContent = streak ? `${streak} day streak. Keep the chain moving.` : "Pass the AI quiz to earn today's XP.";
+      els.focusHint.nextElementSibling.textContent = `Current mission: ${roadmap[selectedIndex].tasks[0]}`;
+    }
+
+    function openQuiz() {
+      const day = roadmap[selectedIndex];
+      if (completed[day.date]?.dayDone) return;
+      currentQuiz = buildQuiz(day);
+      els.quizSubtitle.textContent = `Answer at least 2 of ${currentQuiz.length} questions correctly to mark Day ${selectedIndex + 1} complete.`;
+      els.quizFeedback.textContent = "";
+      els.quizFeedback.className = "quiz-feedback";
+      els.quizList.innerHTML = "";
+      currentQuiz.forEach((question, index) => {
+        const block = document.createElement("label");
+        block.className = "quiz-question";
+        block.innerHTML = `
+          <span><strong>Q${index + 1}.</strong> ${escapeHtml(question.prompt)}</span>
+          <input class="input" name="quiz-${index}" autocomplete="off" placeholder="Type your answer">
+        `;
+        els.quizList.appendChild(block);
+      });
+      els.quizModal.classList.remove("hidden");
+      const firstInput = els.quizList.querySelector("input");
+      if (firstInput) firstInput.focus();
+    }
+
+    function buildQuiz(day) {
+      const titleWords = day.title
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, " ")
+        .split(/\s+/)
+        .filter((word) => word.length > 2);
+      const titleKeyword = titleWords[0] || day.focus.toLowerCase();
+      const taskKeyword = day.tasks[0].split(" ")[0].toLowerCase();
+      return [
+        {
+          prompt: `What is today's main focus area?`,
+          answers: [day.focus]
+        },
+        {
+          prompt: `How many tasks are listed for "${day.title}"?`,
+          answers: [String(day.tasks.length)]
+        },
+        {
+          prompt: `Type one important keyword from today's title or first task.`,
+          answers: [titleKeyword, taskKeyword, day.phase, day.title]
+        }
+      ];
+    }
+
+    function gradeQuiz() {
+      let score = 0;
+      currentQuiz.forEach((question, index) => {
+        const input = els.quizForm.querySelector(`[name="quiz-${index}"]`);
+        const answer = normalizeAnswer(input?.value || "");
+        const correct = question.answers.some((expected) => {
+          const normalized = normalizeAnswer(expected);
+          return answer === normalized || answer.includes(normalized) || normalized.includes(answer);
+        });
+        if (correct && answer.length > 0) score += 1;
+      });
+
+      if (score >= 2) {
+        const day = roadmap[selectedIndex];
+        completed[day.date] = {
+          tasks: Array(day.tasks.length).fill(true),
+          dayDone: true,
+          quizScore: score,
+          completedAt: new Date().toISOString()
+        };
+        saveCompleted();
+        els.quizFeedback.textContent = `Passed: ${score}/${currentQuiz.length}. XP unlocked.`;
+        els.quizFeedback.className = "quiz-feedback success";
+        setTimeout(() => {
+          els.quizModal.classList.add("hidden");
+          render();
+        }, 650);
+        return;
+      }
+
+      els.quizFeedback.textContent = `Score: ${score}/${currentQuiz.length}. Review today's tasks and try again.`;
+      els.quizFeedback.className = "quiz-feedback error";
+    }
+
+    function normalizeAnswer(value) {
+      return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ");
+    }
+
     function toggleTask(taskIndex) {
       const day = roadmap[selectedIndex];
       const currentTasks = completed[day.date]?.tasks || Array(day.tasks.length).fill(false);
@@ -1131,11 +1456,11 @@
       })[char]);
     }
 
-    renderProfiles();
     if (activeUser) {
       login(activeUser);
     } else {
-      els.username.focus();
+      setAuthMode("signin");
+      els.email.focus();
     }
   </script>
 </body>
