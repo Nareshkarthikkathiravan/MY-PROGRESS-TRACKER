@@ -7,10 +7,10 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #101114;
-      --panel: #191c22;
-      --panel-2: #20252d;
-      --line: #303744;
+      --bg: #0d1117;
+      --panel: rgba(22, 27, 34, 0.88);
+      --panel-2: rgba(33, 38, 45, 0.95);
+      --line: rgba(139, 148, 158, 0.22);
       --text: #f6f7fb;
       --muted: #aeb7c5;
       --soft: #d5dae4;
@@ -20,7 +20,7 @@
       --red: #ee6666;
       --blue: #7aa7ff;
       --violet: #b695ff;
-      --shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.34);
     }
 
     * {
@@ -30,7 +30,10 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background:
+        linear-gradient(120deg, rgba(76, 201, 216, 0.12), transparent 30%),
+        linear-gradient(240deg, rgba(231, 185, 79, 0.12), transparent 34%),
+        var(--bg);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
@@ -45,6 +48,159 @@
       width: min(1400px, 100%);
       margin: 0 auto;
       padding: 24px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-view {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-shell {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-panel,
+    .login-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(22, 27, 34, 0.86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-panel {
+      min-height: 540px;
+      padding: clamp(24px, 5vw, 54px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(90deg, #000, transparent 85%);
+      pointer-events: none;
+    }
+
+    .hero-panel > * {
+      position: relative;
+    }
+
+    .hero-panel h1 {
+      max-width: 820px;
+      font-size: clamp(2.7rem, 6vw, 5.8rem);
+    }
+
+    .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .hero-metric {
+      min-height: 88px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(13, 17, 23, 0.58);
+    }
+
+    .hero-metric strong {
+      display: block;
+      font-size: 1.7rem;
+    }
+
+    .hero-metric span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .login-card {
+      padding: 24px;
+      align-self: center;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0 14px;
+    }
+
+    .field label {
+      color: var(--soft);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      background: rgba(13, 17, 23, 0.9);
+      outline: none;
+    }
+
+    .input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(76, 201, 216, 0.14);
+    }
+
+    .profile-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 32px;
+      margin-top: 16px;
+    }
+
+    .profile-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      background: rgba(33, 38, 45, 0.82);
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .account-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .account-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--soft);
+      background: rgba(13, 17, 23, 0.58);
     }
 
     .topbar {
@@ -127,6 +283,7 @@
       border-radius: 8px;
       background: var(--panel);
       box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
     }
 
     .stat {
@@ -425,6 +582,14 @@
     }
 
     @media (max-width: 980px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: auto;
+      }
+
       .stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -451,6 +616,14 @@
         grid-template-columns: 1fr;
       }
 
+      .hero-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .account-actions {
+        justify-content: stretch;
+      }
+
       .button {
         width: 100%;
       }
@@ -462,14 +635,47 @@
   </style>
 </head>
 <body>
-  <main class="app">
+  <section class="login-view" id="loginView">
+    <div class="login-shell">
+      <div class="hero-panel">
+        <div>
+          <p class="eyebrow">Placement preparation command center</p>
+          <h1>Track every mission with your own progress profile.</h1>
+          <p class="subtitle">Multiple learners can use the same tracker on this browser. Each username gets separate tasks, XP, badges, and learning notes.</p>
+        </div>
+        <div class="hero-strip">
+          <div class="hero-metric"><strong>62</strong><span>days of structured preparation</span></div>
+          <div class="hero-metric"><strong>240+</strong><span>practice tasks and projects</span></div>
+          <div class="hero-metric"><strong>5</strong><span>achievement badges to unlock</span></div>
+        </div>
+      </div>
+
+      <form class="login-card" id="loginForm">
+        <p class="eyebrow">Login</p>
+        <h2>Choose Your Profile</h2>
+        <p class="subtitle">Enter a name to start or continue your saved roadmap progress.</p>
+        <div class="field">
+          <label for="username">Username</label>
+          <input class="input" id="username" name="username" placeholder="Example: Naresh" autocomplete="username" required maxlength="32">
+        </div>
+        <button class="button primary" type="submit">Enter Tracker</button>
+        <div class="profile-list" id="profileList" aria-label="Saved profiles"></div>
+      </form>
+    </div>
+  </section>
+
+  <main class="app hidden" id="appView">
     <header class="topbar">
       <div>
         <p class="eyebrow">June 1 to August 1 Placement Roadmap</p>
         <h1>Python + DSA Quest Tracker</h1>
         <p class="subtitle">Complete daily missions, earn XP, unlock badges, and keep your placement preparation visible.</p>
       </div>
-      <button class="button danger" id="resetButton" type="button">Reset Progress</button>
+      <div class="account-actions">
+        <span class="account-pill" id="activeUserLabel">Guest</span>
+        <button class="button" id="logoutButton" type="button">Switch User</button>
+        <button class="button danger" id="resetButton" type="button">Reset Progress</button>
+      </div>
     </header>
 
     <section class="stats" aria-label="Roadmap summary">
@@ -634,19 +840,30 @@
     };
 
     const keys = {
-      completed: "python-dsa-roadmap-completed",
-      notes: "python-dsa-roadmap-notes"
+      activeUser: "python-dsa-roadmap-active-user",
+      users: "python-dsa-roadmap-users",
+      legacyMigrated: "python-dsa-roadmap-legacy-migrated",
+      legacyCompleted: "python-dsa-roadmap-completed",
+      legacyNotes: "python-dsa-roadmap-notes"
     };
 
     let selectedIndex = getTodayIndex();
-    let completed = readJson(keys.completed, {});
-    let notes = localStorage.getItem(keys.notes) || "";
+    let activeUser = localStorage.getItem(keys.activeUser) || "";
+    let completed = {};
+    let notes = "";
 
     const els = {
       roadmapList: document.getElementById("roadmapList"),
       taskList: document.getElementById("taskList"),
       badges: document.getElementById("badges"),
       notes: document.getElementById("notes"),
+      loginView: document.getElementById("loginView"),
+      appView: document.getElementById("appView"),
+      loginForm: document.getElementById("loginForm"),
+      username: document.getElementById("username"),
+      profileList: document.getElementById("profileList"),
+      activeUserLabel: document.getElementById("activeUserLabel"),
+      logoutButton: document.getElementById("logoutButton"),
       resetButton: document.getElementById("resetButton"),
       markAllButton: document.getElementById("markAllButton"),
       overallProgress: document.getElementById("overallProgress"),
@@ -665,19 +882,34 @@
       dayPhase: document.getElementById("dayPhase")
     };
 
-    els.notes.value = notes;
     els.notes.addEventListener("input", (event) => {
       notes = event.target.value;
-      localStorage.setItem(keys.notes, notes);
+      localStorage.setItem(userKey("notes"), notes);
+    });
+
+    els.loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const username = cleanUsername(els.username.value);
+      if (!username) return;
+      login(username);
+    });
+
+    els.logoutButton.addEventListener("click", () => {
+      activeUser = "";
+      localStorage.removeItem(keys.activeUser);
+      els.appView.classList.add("hidden");
+      els.loginView.classList.remove("hidden");
+      renderProfiles();
+      els.username.focus();
     });
 
     els.resetButton.addEventListener("click", () => {
-      if (!confirm("Reset all completed tasks and notes?")) return;
+      if (!confirm(`Reset all completed tasks and notes for ${activeUser}?`)) return;
       completed = {};
       notes = "";
       els.notes.value = "";
-      localStorage.removeItem(keys.completed);
-      localStorage.removeItem(keys.notes);
+      localStorage.removeItem(userKey("completed"));
+      localStorage.removeItem(userKey("notes"));
       render();
     });
 
@@ -706,8 +938,69 @@
       }
     }
 
+    function userKey(part) {
+      return `python-dsa-roadmap-user-${activeUser}-${part}`;
+    }
+
+    function cleanUsername(value) {
+      return value.trim().replace(/\s+/g, " ").slice(0, 32);
+    }
+
+    function getUsers() {
+      return readJson(keys.users, []);
+    }
+
+    function saveUser(username) {
+      const users = getUsers();
+      if (!users.includes(username)) {
+        users.push(username);
+        localStorage.setItem(keys.users, JSON.stringify(users));
+      }
+    }
+
+    function login(username) {
+      activeUser = username;
+      saveUser(username);
+      localStorage.setItem(keys.activeUser, username);
+      migrateLegacyData();
+      completed = readJson(userKey("completed"), {});
+      notes = localStorage.getItem(userKey("notes")) || "";
+      els.notes.value = notes;
+      els.activeUserLabel.textContent = username;
+      els.loginView.classList.add("hidden");
+      els.appView.classList.remove("hidden");
+      render();
+    }
+
+    function migrateLegacyData() {
+      if (localStorage.getItem(keys.legacyMigrated)) return;
+      if (localStorage.getItem(userKey("completed")) || localStorage.getItem(userKey("notes"))) return;
+      const legacyCompleted = localStorage.getItem(keys.legacyCompleted);
+      const legacyNotes = localStorage.getItem(keys.legacyNotes);
+      if (legacyCompleted) localStorage.setItem(userKey("completed"), legacyCompleted);
+      if (legacyNotes) localStorage.setItem(userKey("notes"), legacyNotes);
+      if (legacyCompleted || legacyNotes) localStorage.setItem(keys.legacyMigrated, activeUser);
+    }
+
+    function renderProfiles() {
+      const users = getUsers();
+      els.profileList.innerHTML = "";
+      if (!users.length) {
+        els.profileList.innerHTML = '<span class="muted">No saved profiles yet.</span>';
+        return;
+      }
+      users.forEach((username) => {
+        const button = document.createElement("button");
+        button.className = "profile-chip";
+        button.type = "button";
+        button.textContent = username;
+        button.addEventListener("click", () => login(username));
+        els.profileList.appendChild(button);
+      });
+    }
+
     function saveCompleted() {
-      localStorage.setItem(keys.completed, JSON.stringify(completed));
+      localStorage.setItem(userKey("completed"), JSON.stringify(completed));
     }
 
     function render() {
@@ -838,7 +1131,12 @@
       })[char]);
     }
 
-    render();
+    renderProfiles();
+    if (activeUser) {
+      login(activeUser);
+    } else {
+      els.username.focus();
+    }
   </script>
 </body>
 </html>
