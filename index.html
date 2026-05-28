@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python + DSA Quest Tracker</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101114;
+      --panel: #191c22;
+      --panel-2: #20252d;
+      --line: #303744;
+      --text: #f6f7fb;
+      --muted: #aeb7c5;
+      --soft: #d5dae4;
+      --cyan: #4cc9d8;
+      --green: #56c271;
+      --gold: #e7b94f;
+      --red: #ee6666;
+      --blue: #7aa7ff;
+      --violet: #b695ff;
+      --shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1400px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(2rem, 4vw, 4.5rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-bottom: 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.55;
+    }
+
+    .button {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      min-height: 42px;
+      padding: 10px 14px;
+      color: var(--text);
+      background: var(--panel-2);
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+      white-space: nowrap;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: #465064;
+      background: #272d38;
+    }
+
+    .button.primary {
+      background: #25784a;
+      border-color: #3aa366;
+    }
+
+    .button.danger {
+      background: #6f2a2d;
+      border-color: #a84347;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .stat,
+    .panel,
+    .roadmap-item,
+    .task,
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 78px;
+      padding: 14px;
+    }
+
+    .icon {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      color: #101114;
+      font-weight: 900;
+      background: var(--cyan);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+
+    .xp-panel {
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #0c0d10;
+      border: 1px solid #242a34;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      transition: width 260ms ease;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .roadmap-panel {
+      max-height: calc(100vh - 250px);
+      min-height: 520px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin-bottom: 0;
+      font-size: 1rem;
+    }
+
+    .roadmap-list {
+      max-height: calc(100vh - 314px);
+      min-height: 456px;
+      overflow: auto;
+      padding: 12px;
+    }
+
+    .roadmap-item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .roadmap-item:hover,
+    .roadmap-item.active {
+      border-color: var(--cyan);
+      background: #182a32;
+    }
+
+    .roadmap-item small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .roadmap-item strong {
+      display: block;
+      margin: 3px 0;
+      overflow-wrap: anywhere;
+      font-size: 0.92rem;
+      line-height: 1.25;
+    }
+
+    .phase {
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .done-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid #3f4856;
+      color: transparent;
+    }
+
+    .done-dot.done {
+      background: var(--green);
+      color: #061109;
+      border-color: var(--green);
+    }
+
+    .detail-panel {
+      min-height: 720px;
+    }
+
+    .detail-body {
+      padding: 18px;
+    }
+
+    .day-title {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .focus-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #101114;
+      background: var(--blue);
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+
+    .day-title h2 {
+      margin-bottom: 4px;
+      font-size: clamp(1.45rem, 2.6vw, 2.5rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .task:hover {
+      background: var(--panel-2);
+    }
+
+    .task input {
+      width: 19px;
+      height: 19px;
+      accent-color: var(--cyan);
+    }
+
+    .task span {
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .task.done span {
+      color: #7f8998;
+      text-decoration: line-through;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .section {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .badges {
+      display: grid;
+      gap: 8px;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 12px;
+      box-shadow: none;
+      color: #8993a3;
+    }
+
+    .badge.unlocked {
+      color: #ffe6a2;
+      background: #372c15;
+      border-color: #6e5420;
+    }
+
+    .notes {
+      width: 100%;
+      height: 188px;
+      min-height: 188px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0c0d10;
+      color: var(--text);
+      padding: 12px;
+      outline: none;
+      line-height: 1.45;
+    }
+
+    .notes:focus {
+      border-color: var(--cyan);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--soft);
+      background: #11151a;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .layout,
+      .lower-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .roadmap-panel,
+      .roadmap-list {
+        max-height: none;
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        padding: 16px;
+      }
+
+      .topbar,
+      .day-title {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">June 1 to August 1 Placement Roadmap</p>
+        <h1>Python + DSA Quest Tracker</h1>
+        <p class="subtitle">Complete daily missions, earn XP, unlock badges, and keep your placement preparation visible.</p>
+      </div>
+      <button class="button danger" id="resetButton" type="button">Reset Progress</button>
+    </header>
+
+    <section class="stats" aria-label="Roadmap summary">
+      <article class="stat"><span class="icon">OK</span><div><small>Overall Progress</small><strong id="overallProgress">0%</strong></div></article>
+      <article class="stat"><span class="icon" style="background: var(--gold)">LV</span><div><small>Level</small><strong id="level">1</strong></div></article>
+      <article class="stat"><span class="icon" style="background: var(--green)">D</span><div><small>Completed Days</small><strong id="doneDays">0/62</strong></div></article>
+      <article class="stat"><span class="icon" style="background: var(--blue)">T</span><div><small>Tasks Done</small><strong id="doneTasks">0/0</strong></div></article>
+      <article class="stat"><span class="icon" style="background: var(--violet)">XP</span><div><small>Total XP</small><strong id="totalXp">0</strong></div></article>
+    </section>
+
+    <section class="panel xp-panel" aria-label="Level XP">
+      <div class="row">
+        <span class="muted">Level XP</span>
+        <strong id="levelXp">0/300 XP</strong>
+      </div>
+      <div class="bar"><span id="levelBar"></span></div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel roadmap-panel">
+        <div class="panel-head">
+          <h2>Daily Roadmap</h2>
+          <span class="pill" id="streak">0 day streak</span>
+        </div>
+        <div class="roadmap-list" id="roadmapList"></div>
+      </aside>
+
+      <section class="panel detail-panel">
+        <div class="detail-body">
+          <div class="day-title">
+            <div class="focus-icon" id="focusIcon">PY</div>
+            <div>
+              <p class="muted" id="dayMeta">Day 1</p>
+              <h2 id="dayTitle">Python Setup + Variables</h2>
+              <p class="phase" id="dayPhase">Python Basics</p>
+            </div>
+            <button class="button primary" id="markAllButton" type="button">Mark Day Complete</button>
+          </div>
+
+          <div>
+            <div class="row">
+              <span class="muted">Today Progress</span>
+              <strong id="todayCount">0/4</strong>
+            </div>
+            <div class="bar"><span id="todayBar"></span></div>
+          </div>
+
+          <div class="tasks" id="taskList"></div>
+
+          <div class="lower-grid section">
+            <section>
+              <div class="panel-head" style="padding: 0 0 12px; border-bottom: 0">
+                <h3>Badges</h3>
+              </div>
+              <div class="badges" id="badges"></div>
+            </section>
+
+            <section>
+              <div class="panel-head" style="padding: 0 0 12px; border-bottom: 0">
+                <h3>Daily Learning Notes</h3>
+              </div>
+              <textarea class="notes" id="notes" placeholder="Write what you learned today, mistakes, doubts, or important shortcuts..."></textarea>
+            </section>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const roadmap = [
+      { date: "2026-06-01", phase: "Python Basics", title: "Python Setup + Variables", tasks: ["Install Python and VS Code", "Learn variables and data types", "Practice input/output", "Solve 10 basic programs"], focus: "Python", xp: 40 },
+      { date: "2026-06-02", phase: "Python Basics", title: "Operators + Type Conversion", tasks: ["Arithmetic and comparison operators", "Logical operators", "Type conversion", "Solve 10 operator problems"], focus: "Python", xp: 40 },
+      { date: "2026-06-03", phase: "Python Basics", title: "If Else Conditions", tasks: ["if, elif, else", "Nested conditions", "Grade calculator program", "Solve 10 condition problems"], focus: "Python", xp: 40 },
+      { date: "2026-06-04", phase: "Python Basics", title: "Loops", tasks: ["for loop", "while loop", "range()", "Practice 5 pattern programs"], focus: "Python", xp: 45 },
+      { date: "2026-06-05", phase: "Python Basics", title: "Functions", tasks: ["Define functions", "Parameters and return values", "Write reusable code", "Solve 10 function problems"], focus: "Python", xp: 45 },
+      { date: "2026-06-06", phase: "Python Basics", title: "Strings", tasks: ["String indexing and slicing", "String methods", "Palindrome program", "Solve 10 string problems"], focus: "Python", xp: 45 },
+      { date: "2026-06-07", phase: "Python Basics", title: "Lists", tasks: ["List creation", "List methods", "Loop through lists", "Find max/min/sum program"], focus: "Python", xp: 45 },
+      { date: "2026-06-08", phase: "Python Basics", title: "Tuple, Set, Dictionary", tasks: ["Tuple basics", "Set basics", "Dictionary basics", "Create student details dictionary"], focus: "Python", xp: 45 },
+      { date: "2026-06-09", phase: "Python Basics", title: "Dictionary Practice", tasks: ["Dictionary methods", "Frequency count program", "Student marks program", "Solve 8 dictionary problems"], focus: "Python", xp: 45 },
+      { date: "2026-06-10", phase: "Python Basics", title: "File Handling", tasks: ["Read files", "Write files", "Append data", "Create notes saver program"], focus: "Python", xp: 45 },
+      { date: "2026-06-11", phase: "Python Basics", title: "Exception Handling", tasks: ["try and except", "finally block", "Handle invalid input", "Create safe calculator"], focus: "Python", xp: 45 },
+      { date: "2026-06-12", phase: "Python Basics", title: "Modules", tasks: ["Import modules", "math module", "random module", "Create random password generator"], focus: "Python", xp: 45 },
+      { date: "2026-06-13", phase: "Python Revision", title: "Python Revision Day", tasks: ["Revise all basics", "Solve 20 Python problems", "Write notes", "Fix weak topics"], focus: "Revision", xp: 60 },
+      { date: "2026-06-14", phase: "Python Test", title: "Mini Test + Programs", tasks: ["Build calculator", "Build student mark system", "Take 30-minute test", "Upload code to GitHub"], focus: "Project", xp: 70 },
+      { date: "2026-06-15", phase: "OOP", title: "Classes and Objects", tasks: ["Understand class", "Create object", "Write Student class", "Practice 5 OOP examples"], focus: "OOP", xp: 50 },
+      { date: "2026-06-16", phase: "OOP", title: "Constructor + self", tasks: ["Learn __init__", "Understand self", "Create Employee class", "Practice 5 constructor programs"], focus: "OOP", xp: 50 },
+      { date: "2026-06-17", phase: "OOP", title: "Inheritance", tasks: ["Single inheritance", "Multilevel inheritance", "Vehicle example", "Practice 5 inheritance examples"], focus: "OOP", xp: 50 },
+      { date: "2026-06-18", phase: "OOP", title: "Polymorphism", tasks: ["Method overriding", "Same method different class", "Shape area example", "Practice 5 examples"], focus: "OOP", xp: 50 },
+      { date: "2026-06-19", phase: "OOP", title: "Encapsulation", tasks: ["Public/private variables", "Getter and setter", "Bank account example", "Practice 5 examples"], focus: "OOP", xp: 50 },
+      { date: "2026-06-20", phase: "OOP Project", title: "Library Management System", tasks: ["Create Book class", "Create Library class", "Add/search books", "Complete mini project"], focus: "Project", xp: 80 },
+      { date: "2026-06-21", phase: "OOP Project", title: "Banking System", tasks: ["Create Account class", "Deposit and withdraw", "Balance check", "Complete mini project"], focus: "Project", xp: 80 },
+      { date: "2026-06-22", phase: "OOP Revision", title: "OOP Revision", tasks: ["Revise all OOP topics", "Solve 15 OOP questions", "Update notes", "Push code to GitHub"], focus: "Revision", xp: 60 },
+      { date: "2026-06-23", phase: "SQL Basics", title: "SQL Setup + Database", tasks: ["Install MySQL or use online SQL editor", "Create database", "Create table", "Insert sample records"], focus: "SQL", xp: 45 },
+      { date: "2026-06-24", phase: "SQL Basics", title: "CREATE + INSERT", tasks: ["CREATE TABLE", "INSERT INTO", "Add student records", "Practice 10 queries"], focus: "SQL", xp: 45 },
+      { date: "2026-06-25", phase: "SQL Basics", title: "SELECT + WHERE", tasks: ["SELECT queries", "WHERE condition", "AND/OR", "Practice 15 queries"], focus: "SQL", xp: 45 },
+      { date: "2026-06-26", phase: "SQL Basics", title: "UPDATE + DELETE", tasks: ["UPDATE records", "DELETE records", "Use safe WHERE condition", "Practice 10 queries"], focus: "SQL", xp: 45 },
+      { date: "2026-06-27", phase: "SQL Basics", title: "ORDER BY + GROUP BY", tasks: ["ORDER BY", "GROUP BY", "HAVING basics", "Practice 15 queries"], focus: "SQL", xp: 50 },
+      { date: "2026-06-28", phase: "SQL Basics", title: "JOINS", tasks: ["Primary key idea", "INNER JOIN", "LEFT JOIN", "Practice 10 join queries"], focus: "SQL", xp: 55 },
+      { date: "2026-06-29", phase: "SQL Basics", title: "Aggregate Functions", tasks: ["COUNT", "SUM", "AVG", "MIN/MAX", "Practice 15 aggregate queries"], focus: "SQL", xp: 50 },
+      { date: "2026-06-30", phase: "SQL Project", title: "Student Database Project", tasks: ["Create student table", "Create marks table", "Use joins", "Complete SQL mini project"], focus: "Project", xp: 80 },
+      { date: "2026-07-01", phase: "DSA Basics", title: "Time Complexity", tasks: ["Understand Big O", "O(1), O(n), O(n^2)", "Analyze 5 programs", "Write notes"], focus: "DSA", xp: 55 },
+      { date: "2026-07-02", phase: "DSA Basics", title: "Arrays", tasks: ["Array/list basics", "Traversal", "Find largest/smallest", "Solve 5 array problems"], focus: "DSA", xp: 55 },
+      { date: "2026-07-03", phase: "DSA Basics", title: "Array Problems", tasks: ["Reverse array", "Second largest", "Remove duplicates", "Solve 8 array problems"], focus: "DSA", xp: 60 },
+      { date: "2026-07-04", phase: "DSA Basics", title: "String Problems", tasks: ["Reverse string", "Palindrome", "Vowel count", "Solve 8 string problems"], focus: "DSA", xp: 60 },
+      { date: "2026-07-05", phase: "DSA Basics", title: "Searching", tasks: ["Linear search", "Search in list", "Count occurrence", "Solve 6 search problems"], focus: "DSA", xp: 55 },
+      { date: "2026-07-06", phase: "DSA Basics", title: "Bubble + Selection Sort", tasks: ["Bubble sort", "Selection sort", "Dry run examples", "Code both algorithms"], focus: "DSA", xp: 60 },
+      { date: "2026-07-07", phase: "DSA Basics", title: "Insertion Sort", tasks: ["Understand insertion sort", "Dry run", "Code insertion sort", "Solve 5 sorting problems"], focus: "DSA", xp: 60 },
+      { date: "2026-07-08", phase: "DSA Basics", title: "Binary Search", tasks: ["Binary search logic", "Iterative method", "Find element in sorted array", "Solve 6 binary search problems"], focus: "DSA", xp: 65 },
+      { date: "2026-07-09", phase: "DSA Basics", title: "Recursion", tasks: ["Base condition", "Recursive call", "Factorial", "Fibonacci", "Solve 5 recursion problems"], focus: "DSA", xp: 65 },
+      { date: "2026-07-10", phase: "DSA Basics", title: "Stack", tasks: ["Stack concept", "push/pop", "Implement using list", "Balanced parentheses problem"], focus: "DSA", xp: 65 },
+      { date: "2026-07-11", phase: "DSA Basics", title: "Queue", tasks: ["Queue concept", "enqueue/dequeue", "Implement using list", "Practice 5 queue problems"], focus: "DSA", xp: 65 },
+      { date: "2026-07-12", phase: "DSA Basics", title: "Linked List Basics", tasks: ["Node concept", "Create linked list", "Print linked list", "Insert node"], focus: "DSA", xp: 70 },
+      { date: "2026-07-13", phase: "DSA Basics", title: "Linked List Problems", tasks: ["Delete node", "Search node", "Count nodes", "Reverse linked list basics"], focus: "DSA", xp: 70 },
+      { date: "2026-07-14", phase: "DSA Basics", title: "Hashing", tasks: ["Hash map idea", "Use dictionary", "Frequency count", "Two sum problem"], focus: "DSA", xp: 70 },
+      { date: "2026-07-15", phase: "DSA Basics", title: "Dictionary in DSA", tasks: ["Count characters", "Find duplicates", "Group data", "Solve 8 hashing problems"], focus: "DSA", xp: 70 },
+      { date: "2026-07-16", phase: "DSA Basics", title: "Trees Introduction", tasks: ["Tree terms", "Root/leaf/node", "Binary tree idea", "Draw tree examples"], focus: "DSA", xp: 60 },
+      { date: "2026-07-17", phase: "DSA Basics", title: "Binary Tree Basics", tasks: ["Create tree node", "Inorder idea", "Preorder idea", "Postorder idea"], focus: "DSA", xp: 70 },
+      { date: "2026-07-18", phase: "DSA Revision", title: "DSA Revision", tasks: ["Revise arrays and strings", "Revise searching/sorting", "Revise stack/queue", "Solve 15 problems"], focus: "Revision", xp: 80 },
+      { date: "2026-07-19", phase: "DSA Practice", title: "LeetCode Easy Day", tasks: ["Solve 10 easy problems", "Write solution notes", "Track mistakes", "Repeat weak problems"], focus: "Practice", xp: 100 },
+      { date: "2026-07-20", phase: "DSA Test", title: "Mock Coding Test", tasks: ["Take 60-minute coding test", "Solve 3 problems", "Review mistakes", "Update progress notes"], focus: "Test", xp: 100 },
+      { date: "2026-07-21", phase: "Aptitude", title: "Percentages", tasks: ["Learn percentage basics", "Shortcut formulas", "Solve 25 questions", "Review wrong answers"], focus: "Aptitude", xp: 55 },
+      { date: "2026-07-22", phase: "Aptitude", title: "Ratio and Proportion", tasks: ["Ratio basics", "Proportion tricks", "Solve 25 questions", "Make formula notes"], focus: "Aptitude", xp: 55 },
+      { date: "2026-07-23", phase: "Aptitude", title: "Profit and Loss", tasks: ["Cost price/selling price", "Profit/loss percentage", "Solve 25 questions", "Review mistakes"], focus: "Aptitude", xp: 55 },
+      { date: "2026-07-24", phase: "Aptitude", title: "Time and Work", tasks: ["Work formula", "Men-days concept", "Solve 25 questions", "Practice shortcuts"], focus: "Aptitude", xp: 60 },
+      { date: "2026-07-25", phase: "Aptitude", title: "Speed, Time and Distance", tasks: ["Speed formula", "Train basics", "Relative speed", "Solve 25 questions"], focus: "Aptitude", xp: 60 },
+      { date: "2026-07-26", phase: "Aptitude", title: "Logical Reasoning", tasks: ["Number series", "Coding-decoding", "Blood relation", "Solve 30 questions"], focus: "Aptitude", xp: 60 },
+      { date: "2026-07-27", phase: "Aptitude Test", title: "Puzzles + Mock Test", tasks: ["Solve 5 puzzles", "Take aptitude mock test", "Review wrong answers", "Update weak topics"], focus: "Test", xp: 90 },
+      { date: "2026-07-28", phase: "Mini Projects", title: "Student Management System", tasks: ["Plan features", "Add student", "View/search student", "Complete project"], focus: "Project", xp: 100 },
+      { date: "2026-07-29", phase: "Mini Projects", title: "To-Do App", tasks: ["Add task", "Mark completed", "Delete task", "Save tasks in file"], focus: "Project", xp: 100 },
+      { date: "2026-07-30", phase: "Mini Projects", title: "Expense Tracker", tasks: ["Add expense", "Category summary", "Monthly total", "Complete project"], focus: "Project", xp: 100 },
+      { date: "2026-07-31", phase: "Final Preparation", title: "Resume + GitHub", tasks: ["Upload projects to GitHub", "Update resume", "Write LinkedIn project post", "Revise all notes"], focus: "Career", xp: 100 },
+      { date: "2026-08-01", phase: "Final Test", title: "Mock Interview Day", tasks: ["Mock coding round", "Mock aptitude test", "Explain 2 projects", "Make next 30-day plan"], focus: "Final", xp: 120 }
+    ];
+
+    const focusIcon = {
+      Python: "PY",
+      OOP: "OP",
+      SQL: "DB",
+      DSA: "DS",
+      Aptitude: "AT",
+      Project: "PR",
+      Revision: "RV",
+      Practice: "OK",
+      Test: "TS",
+      Career: "CV",
+      Final: "FN"
+    };
+
+    const colors = {
+      Python: "var(--cyan)",
+      OOP: "var(--gold)",
+      SQL: "var(--green)",
+      DSA: "var(--blue)",
+      Aptitude: "var(--violet)",
+      Project: "#ff9b6b",
+      Revision: "#a8d672",
+      Practice: "#74d7b7",
+      Test: "#ffcf66",
+      Career: "#f08ab3",
+      Final: "#ffcf66"
+    };
+
+    const keys = {
+      completed: "python-dsa-roadmap-completed",
+      notes: "python-dsa-roadmap-notes"
+    };
+
+    let selectedIndex = getTodayIndex();
+    let completed = readJson(keys.completed, {});
+    let notes = localStorage.getItem(keys.notes) || "";
+
+    const els = {
+      roadmapList: document.getElementById("roadmapList"),
+      taskList: document.getElementById("taskList"),
+      badges: document.getElementById("badges"),
+      notes: document.getElementById("notes"),
+      resetButton: document.getElementById("resetButton"),
+      markAllButton: document.getElementById("markAllButton"),
+      overallProgress: document.getElementById("overallProgress"),
+      level: document.getElementById("level"),
+      doneDays: document.getElementById("doneDays"),
+      doneTasks: document.getElementById("doneTasks"),
+      totalXp: document.getElementById("totalXp"),
+      levelXp: document.getElementById("levelXp"),
+      levelBar: document.getElementById("levelBar"),
+      todayBar: document.getElementById("todayBar"),
+      todayCount: document.getElementById("todayCount"),
+      streak: document.getElementById("streak"),
+      focusIcon: document.getElementById("focusIcon"),
+      dayMeta: document.getElementById("dayMeta"),
+      dayTitle: document.getElementById("dayTitle"),
+      dayPhase: document.getElementById("dayPhase")
+    };
+
+    els.notes.value = notes;
+    els.notes.addEventListener("input", (event) => {
+      notes = event.target.value;
+      localStorage.setItem(keys.notes, notes);
+    });
+
+    els.resetButton.addEventListener("click", () => {
+      if (!confirm("Reset all completed tasks and notes?")) return;
+      completed = {};
+      notes = "";
+      els.notes.value = "";
+      localStorage.removeItem(keys.completed);
+      localStorage.removeItem(keys.notes);
+      render();
+    });
+
+    els.markAllButton.addEventListener("click", () => {
+      const day = roadmap[selectedIndex];
+      completed[day.date] = {
+        tasks: Array(day.tasks.length).fill(true),
+        dayDone: true
+      };
+      saveCompleted();
+      render();
+    });
+
+    function getTodayIndex() {
+      const today = new Date().toISOString().slice(0, 10);
+      const index = roadmap.findIndex((item) => item.date === today);
+      return index >= 0 ? index : 0;
+    }
+
+    function readJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveCompleted() {
+      localStorage.setItem(keys.completed, JSON.stringify(completed));
+    }
+
+    function render() {
+      const totalTasks = roadmap.reduce((total, day) => total + day.tasks.length, 0);
+      const doneDays = roadmap.filter((day) => completed[day.date]?.dayDone).length;
+      const doneTasks = roadmap.reduce((total, day) => {
+        return total + (completed[day.date]?.tasks?.filter(Boolean).length || 0);
+      }, 0);
+      const totalXp = roadmap.reduce((total, day) => {
+        return total + (completed[day.date]?.dayDone ? day.xp : 0);
+      }, 0);
+      const progress = Math.round((doneTasks / totalTasks) * 100);
+      const level = Math.floor(totalXp / 300) + 1;
+      const xpInLevel = totalXp % 300;
+      const streak = getStreak();
+
+      els.overallProgress.textContent = `${progress}%`;
+      els.level.textContent = level;
+      els.doneDays.textContent = `${doneDays}/${roadmap.length}`;
+      els.doneTasks.textContent = `${doneTasks}/${totalTasks}`;
+      els.totalXp.textContent = totalXp;
+      els.levelXp.textContent = `${xpInLevel}/300 XP`;
+      els.levelBar.style.width = `${(xpInLevel / 300) * 100}%`;
+      els.streak.textContent = `${streak} day${streak === 1 ? "" : "s"} streak`;
+
+      renderRoadmap();
+      renderDay();
+      renderBadges(doneDays, totalXp);
+    }
+
+    function getStreak() {
+      let current = 0;
+      for (let i = 0; i < roadmap.length; i += 1) {
+        if (completed[roadmap[i].date]?.dayDone) current += 1;
+        else if (current > 0) break;
+      }
+      return current;
+    }
+
+    function renderRoadmap() {
+      els.roadmapList.innerHTML = "";
+      roadmap.forEach((day, index) => {
+        const item = document.createElement("button");
+        item.className = `roadmap-item${selectedIndex === index ? " active" : ""}`;
+        item.type = "button";
+        item.innerHTML = `
+          <div>
+            <small>Day ${index + 1} | ${day.date}</small>
+            <strong>${escapeHtml(day.title)}</strong>
+            <span class="phase">${escapeHtml(day.phase)}</span>
+          </div>
+          <span class="done-dot${completed[day.date]?.dayDone ? " done" : ""}" aria-label="${completed[day.date]?.dayDone ? "Done" : "Not done"}">✓</span>
+        `;
+        item.addEventListener("click", () => {
+          selectedIndex = index;
+          render();
+        });
+        els.roadmapList.appendChild(item);
+      });
+    }
+
+    function renderDay() {
+      const day = roadmap[selectedIndex];
+      const selectedTasks = completed[day.date]?.tasks || [];
+      const completedCount = selectedTasks.filter(Boolean).length;
+
+      els.focusIcon.textContent = focusIcon[day.focus] || "TG";
+      els.focusIcon.style.background = colors[day.focus] || "var(--cyan)";
+      els.dayMeta.textContent = `Day ${selectedIndex + 1} | ${day.date}`;
+      els.dayTitle.textContent = day.title;
+      els.dayPhase.textContent = `${day.phase} | ${day.xp} XP`;
+      els.todayCount.textContent = `${completedCount}/${day.tasks.length}`;
+      els.todayBar.style.width = `${(completedCount / day.tasks.length) * 100}%`;
+
+      els.taskList.innerHTML = "";
+      day.tasks.forEach((task, index) => {
+        const id = `task-${selectedIndex}-${index}`;
+        const label = document.createElement("label");
+        label.className = `task${selectedTasks[index] ? " done" : ""}`;
+        label.htmlFor = id;
+        label.innerHTML = `
+          <input id="${id}" type="checkbox" ${selectedTasks[index] ? "checked" : ""}>
+          <span>${escapeHtml(task)}</span>
+        `;
+        label.querySelector("input").addEventListener("change", () => toggleTask(index));
+        els.taskList.appendChild(label);
+      });
+    }
+
+    function renderBadges(doneDays, totalXp) {
+      const badges = [
+        { name: "Python Starter", unlocked: doneDays >= 7 },
+        { name: "OOP Builder", unlocked: totalXp >= 900 },
+        { name: "SQL Warrior", unlocked: totalXp >= 1300 },
+        { name: "DSA Fighter", unlocked: totalXp >= 2200 },
+        { name: "Project Finisher", unlocked: doneDays >= 58 }
+      ];
+
+      els.badges.innerHTML = "";
+      badges.forEach((badge) => {
+        const row = document.createElement("div");
+        row.className = `badge${badge.unlocked ? " unlocked" : ""}`;
+        row.innerHTML = `<strong>${escapeHtml(badge.name)}</strong><span>${badge.unlocked ? "Unlocked" : "Locked"}</span>`;
+        els.badges.appendChild(row);
+      });
+    }
+
+    function toggleTask(taskIndex) {
+      const day = roadmap[selectedIndex];
+      const currentTasks = completed[day.date]?.tasks || Array(day.tasks.length).fill(false);
+      const nextTasks = [...currentTasks];
+      nextTasks[taskIndex] = !nextTasks[taskIndex];
+      completed[day.date] = {
+        tasks: nextTasks,
+        dayDone: nextTasks.every(Boolean)
+      };
+      saveCompleted();
+      render();
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    render();
+  </script>
+</body>
+</html>
